@@ -33,6 +33,9 @@ const sideEffects = (
     .on('brushedColor', d => {
       ctx.brushed.strokeStyle = d.value;
     })
+    .on('highlightColor', d => {
+      ctx.highlight.strokeStyle = d.value;
+    })
     .on('width', d => pc.resize())
     .on('height', d => pc.resize())
     .on('margin', d => pc.resize())

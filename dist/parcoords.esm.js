@@ -1890,6 +1890,10 @@ var flipAxisAndUpdatePCP = function flipAxisAndUpdatePCP(config, pc, axis) {
     pc.brushReset(dimension);
     select(this.parentElement).transition().duration(config.animationTime).call(axis.scale(config.dimensions[dimension].yscale));
     pc.render();
+
+    if (config.highlighted != 0) {
+      pc.highlight(config.highlighted);
+    }
   };
 };
 
@@ -1903,6 +1907,10 @@ var rotateLabels = function rotateLabels(config, pc) {
   config.dimensionTitleRotation += delta;
   pc.svg.selectAll('text.label').attr('transform', 'translate(0,-5) rotate(' + config.dimensionTitleRotation + ')');
   event.preventDefault();
+
+  if (config.highlighted != 0) {
+    pc.highlight(config.highlighted);
+  }
 };
 
 var _this$2 = undefined;
@@ -2076,6 +2084,7 @@ var autoscale = function autoscale(config, pc, xscale, ctx) {
     ctx.marked.shadowColor = config.markedShadowColor;
     ctx.marked.shadowBlur = config.markedShadowBlur;
     ctx.marked.scale(devicePixelRatio, devicePixelRatio);
+    ctx.highlight.strokeStyle = config.highlightColor;
 
     return this;
   };
@@ -2367,6 +2376,10 @@ var reorderable = function reorderable(config, pc, xscale, position, dragging, f
       select(this).transition().attr('transform', 'translate(' + xscale(d) + ')');
       pc.render();
       pc.renderMarked();
+
+      if (config.highlighted != 0) {
+        pc.highlight(config.highlighted);
+      }
     }));
     flags.reorderable = true;
     return this;
@@ -3846,7 +3859,12 @@ var adjacentPairs = function adjacentPairs(arr) {
 
 var pathHighlight = function pathHighlight(config, ctx, position) {
   return function (d, i) {
-    ctx.highlight.strokeStyle = _functor(config.color)(d, i);
+    // ctx.highlight.strokeStyle = functor(config.color)(d, i);
+    if (config.highlightColor !== null) {
+      ctx.highlight.strokeStyle = _functor(config.highlightColor)(d, i);
+    } else {
+      ctx.highlight.strokeStyle = _functor(config.color)(d, i);
+    }
     return colorPath(config, position, d, ctx.highlight);
   };
 };
@@ -4075,6 +4093,7 @@ var version = "2.2.5";
 var DefaultConfig = {
   data: [],
   highlighted: [],
+  highlightColor: null,
   marked: [],
   dimensions: {},
   dimensionTitleRotation: 0,
@@ -4225,6 +4244,8 @@ var sideEffects = function sideEffects(config, ctx, pc, xscale, flags, brushedQu
     ctx.brushed.globalAlpha = d.value;
   }).on('brushedColor', function (d) {
     ctx.brushed.strokeStyle = d.value;
+  }).on('highlightColor', function (d) {
+    ctx.highlight.strokeStyle = d.value;
   }).on('width', function (d) {
     return pc.resize();
   }).on('height', function (d) {

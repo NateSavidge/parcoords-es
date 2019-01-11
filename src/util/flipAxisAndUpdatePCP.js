@@ -9,6 +9,11 @@ const flipAxisAndUpdatePCP = (config, pc, axis) =>
       .duration(config.animationTime)
       .call(axis.scale(config.dimensions[dimension].yscale));
     pc.render();
+
+    if (config.highlighted != 0) {
+      pc.highlight(config.highlighted);
+    }
+    
   };
 
 export default flipAxisAndUpdatePCP;
