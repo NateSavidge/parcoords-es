@@ -1,6 +1,7 @@
 const DefaultConfig = {
   data: [],
   highlighted: [],
+  highlightColor: null,
   marked: [],
   dimensions: {},
   dimensionTitleRotation: 0,
