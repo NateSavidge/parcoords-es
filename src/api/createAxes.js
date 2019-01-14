@@ -67,7 +67,7 @@ const createAxes = (config, pc, xscale, flags, axis) =>
       .attr('x', 0)
       .attr('class', 'label')
       .text(dimensionLabels(config))
-      .on('dblclick', flipAxisAndUpdatePCP(config, pc, axis))
+      // .on('dblclick', flipAxisAndUpdatePCP(config, pc, axis))
       .on('wheel', rotateLabels(config, pc));
 
     if (config.nullValueSeparator === 'top') {

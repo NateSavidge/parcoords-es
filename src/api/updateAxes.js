@@ -51,7 +51,7 @@ const updateAxes = (config, pc, position, axis, flags) => (
       'translate(0,-5) rotate(' + config.dimensionTitleRotation + ')'
     )
     .text(dimensionLabels(config))
-    .on('dblclick', flipAxisAndUpdatePCP(config, pc, axis))
+    // .on('dblclick', flipAxisAndUpdatePCP(config, pc, axis))
     .on('wheel', rotateLabels(config, pc));
 
   // Update

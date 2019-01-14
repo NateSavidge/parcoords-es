@@ -6388,19 +6388,6 @@
       };
     };
 
-    var flipAxisAndUpdatePCP = function flipAxisAndUpdatePCP(config, pc, axis) {
-      return function (dimension) {
-        pc.flip(dimension);
-        pc.brushReset(dimension);
-        select(this.parentElement).transition().duration(config.animationTime).call(axis.scale(config.dimensions[dimension].yscale));
-        pc.render();
-
-        if (config.highlighted != 0) {
-          pc.highlight(config.highlighted);
-        }
-      };
-    };
-
     var rotateLabels = function rotateLabels(config, pc) {
       if (!config.rotateLabels) return;
 
@@ -6437,7 +6424,9 @@
           axisElement.selectAll('path').style('fill', 'none').style('stroke', '#222').style('shape-rendering', 'crispEdges');
 
           axisElement.selectAll('line').style('fill', 'none').style('stroke', '#222').style('shape-rendering', 'crispEdges');
-        }).append('svg:text').attr('text-anchor', 'middle').attr('class', 'label').attr('x', 0).attr('y', 0).attr('transform', 'translate(0,-5) rotate(' + config.dimensionTitleRotation + ')').text(dimensionLabels(config)).on('dblclick', flipAxisAndUpdatePCP(config, pc, axis)).on('wheel', rotateLabels(config, pc));
+        }).append('svg:text').attr('text-anchor', 'middle').attr('class', 'label').attr('x', 0).attr('y', 0).attr('transform', 'translate(0,-5) rotate(' + config.dimensionTitleRotation + ')').text(dimensionLabels(config))
+        // .on('dblclick', flipAxisAndUpdatePCP(config, pc, axis))
+        .on('wheel', rotateLabels(config, pc));
 
         // Update
         g_data.attr('opacity', 0);
@@ -8862,7 +8851,9 @@
           axisElement.selectAll('path').style('fill', 'none').style('stroke', '#222').style('shape-rendering', 'crispEdges');
 
           axisElement.selectAll('line').style('fill', 'none').style('stroke', '#222').style('shape-rendering', 'crispEdges');
-        }).append('svg:text').attr('text-anchor', 'middle').attr('y', 0).attr('transform', 'translate(0,-5) rotate(' + config.dimensionTitleRotation + ')').attr('x', 0).attr('class', 'label').text(dimensionLabels(config)).on('dblclick', flipAxisAndUpdatePCP(config, pc, axis)).on('wheel', rotateLabels(config, pc));
+        }).append('svg:text').attr('text-anchor', 'middle').attr('y', 0).attr('transform', 'translate(0,-5) rotate(' + config.dimensionTitleRotation + ')').attr('x', 0).attr('class', 'label').text(dimensionLabels(config))
+        // .on('dblclick', flipAxisAndUpdatePCP(config, pc, axis))
+        .on('wheel', rotateLabels(config, pc));
 
         if (config.nullValueSeparator === 'top') {
           pc.svg.append('line').attr('x1', 0).attr('y1', 1 + config.nullValueSeparatorPadding.top).attr('x2', w(config)).attr('y2', 1 + config.nullValueSeparatorPadding.top).attr('stroke-width', 1).attr('stroke', '#777').attr('fill', 'none').attr('shape-rendering', 'crispEdges');
@@ -9119,8 +9110,18 @@
 
     // rescale for height, width and margins
     // TODO currently assumes chart is brushable, and destroys old brushes
+
     var resize = function resize(config, pc, flags, events) {
       return function () {
+
+        var currentBrushMode = pc.brushMode();
+
+        // reinstalling brushes when resizing currently works for "1D-axes"
+        if (currentBrushMode === "1D-axes") {
+          //store the current brush state
+          var extents = pc.brushExtents();
+        }
+
         // selection size
         pc.selection.select('svg').attr('width', config.width).attr('height', config.height);
         pc.svg.attr('transform', 'translate(' + config.margin.left + ',' + config.margin.top + ')');
@@ -9135,6 +9136,45 @@
         if (pc.g()) pc.createAxes();
         if (flags.brushable) pc.brushable();
         if (flags.reorderable) pc.reorderable();
+
+        pc.brushMode("None");
+        pc.brushMode("1D-axes");
+
+        if (extents) {
+          var axisNames = Object.keys(extents);
+
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = axisNames[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var axisName = _step.value;
+
+              var newState = {};
+              var temp = extents[axisName];
+              var coords = temp.selection.scaled.reverse();
+
+              newState[axisName] = coords;
+              pc.brushExtents(newState);
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator.return) {
+                _iterator.return();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+        }
+
+        pc.render();
 
         events.call('resize', this, {
           width: config.width,

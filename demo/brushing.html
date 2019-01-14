@@ -43,7 +43,7 @@
         };
 
         var parcoords = ParCoords()("#example")
-        //    .color(color)
+            .color(color)
             .alpha(0.4)
 //
 //            .on('render', ()=>{
@@ -102,6 +102,11 @@
                     break;
             }
         });
+
+        window.onresize = function() {
+            parcoords.width(document.body.clientWidth);
+            parcoords.resize();
+        };
 
         sltBrushMode.property('value', '1D-axes');
 
