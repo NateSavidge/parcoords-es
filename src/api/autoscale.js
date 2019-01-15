@@ -126,6 +126,7 @@ const autoscale = (config, pc, xscale, ctx) =>
     ctx.marked.shadowColor = config.markedShadowColor;
     ctx.marked.shadowBlur = config.markedShadowBlur;
     ctx.marked.scale(devicePixelRatio, devicePixelRatio);
+    ctx.highlight.strokeStyle = config.highlightColor;
 
     return this;
   };

@@ -4,7 +4,12 @@ import colorPath from '../util/colorPath';
 import functor from '../util/functor';
 
 const pathHighlight = (config, ctx, position) => (d, i) => {
-  ctx.highlight.strokeStyle = functor(config.color)(d, i);
+  // ctx.highlight.strokeStyle = functor(config.color)(d, i);
+  if (config.highlightColor !== null) {
+		ctx.highlight.strokeStyle = functor(config.highlightColor)(d, i)
+	} else {
+		ctx.highlight.strokeStyle = functor(config.color)(d, i);
+	}
   return colorPath(config, position, d, ctx.highlight);
 };
 

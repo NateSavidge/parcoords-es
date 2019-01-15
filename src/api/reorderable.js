@@ -32,6 +32,11 @@ const reorderable = (config, pc, xscale, position, dragging, flags) =>
             .attr('transform', 'translate(' + xscale(d) + ')');
           pc.render();
           pc.renderMarked();
+
+          if (config.highlighted != 0) {
+            pc.highlight(config.highlighted);
+          }
+          
         })
     );
     flags.reorderable = true;

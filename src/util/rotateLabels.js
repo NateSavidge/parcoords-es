@@ -15,6 +15,11 @@ const rotateLabels = (config, pc) => {
       'translate(0,-5) rotate(' + config.dimensionTitleRotation + ')'
     );
   event.preventDefault();
+
+  if (config.highlighted != 0) {
+    pc.highlight(config.highlighted);
+  }
+  
 };
 
 export default rotateLabels;
